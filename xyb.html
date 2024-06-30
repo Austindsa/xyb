@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            width: 250px;
+            transition: width 0.3s;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.collapsed {
+            width: 100px;
+        }
+        .sidebar.collapsed .section-title {
+            display: none;
+        }
+        .sidebar.collapsed .toggle-btn::before {
+            content: ">>";
+        }
+        .sidebar .toggle-btn {
+            display: block;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            background-color: #34495e;
+            color: #ecf0f1;
+            border: none;
+        }
+        .content {
+            border: 1px black solid;
+            flex-grow: 1;
+            background-color: #ecf0f1;
+        }
+        .section-title {
+            cursor: pointer;
+            padding: 10px;
+            border-bottom: 1px solid #34495e;
+            background-color: #34495e;
+            margin: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .section-title:hover {
+            background-color: #3b5998;
+        }
+        .section-content {
+            display: none;
+            padding: 0 10px;
+            background-color: #3b5998;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .section-content p {
+            cursor: pointer;
+            padding: 8px 0;
+            margin: 0;
+            color: #ecf0f1;
+            border-bottom: 1px solid #34495e;
+            transition: background-color 0.3s;
+        }
+        .section-content p:hover {
+            background-color: #4a69bd;
+        }
+        .section-content p.active {
+            background-color: #1abc9c;
+        }
+        .user-card {
+            padding: 10px;
+            background-color: #2980b9;
+            border-bottom: 1px solid #34495e;
+            margin: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .user-card.collapsed {
+            padding: 10px 0;
+        }
+        .user-card span {
+            display: block;
+        }
+        .header {
+            height: 75px;
+            text-align: center;
+            background-color: #3498db;
+            color: #ecf0f1;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="user-card" id="userCard">
+            <span>当前用户：</span>
+            <span>徐宇波</span>
+        </div>
+        <button class="toggle-btn" onclick="toggleSidebar()"><<</button>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">应急部门</div>
+            <div class="section-content">
+                <p onclick="showContent(event, '办公厅')">办公厅</p>
+                <p onclick="showContent(event, '应急中心')">应急中心</p>
+                <p onclick="showContent(event, '公交部门')">公交部门</p>
+                <p onclick="showContent(event, '消防部门')">消防部门</p>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">医疗部门</div>
+        </div>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">物资管理</div>
+            <div class="section-content">
+                <p onclick="showContent(event, '生活物资')">生活物资</p>
+                <p onclick="showContent(event, '工作物资')">工作物资</p>
+                <p onclick="showContent(event, '特殊物资')">特殊物资</p>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">运输单位</div>
+        </div>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">庇护场所</div>
+        </div>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">调度信息</div>
+        </div>
+        <div class="section">
+            <div class="section-title" onclick="toggleSection(this)">信息公示</div>
+        </div>
+    </div>
+    <div class="content" id="content">
+        <div class="header"><h2>基于Web-GIS的周口市应急资源管理调度系统</h2></div>
+        <h1>欢迎！</h1>
+        <p>请选择左侧菜单以查看内容。</p>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var userCard = document.getElementById('userCard');
+            sidebar.classList.toggle('collapsed');
+            userCard.classList.toggle('collapsed');
+
+            // 收起所有子项内容
+            var sections = document.querySelectorAll('.section-content');
+            sections.forEach(function(section) {
+                section.style.display = 'none';
+            });
+        }
+
+        function toggleSection(element) {
+            var content = element.nextElementSibling;
+            if (content) {
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function showContent(event, contentName) {
+            event.stopPropagation(); // 防止触发父元素的点击事件
+            var contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = ` <div class="header"><h2>基于Web-GIS的周口市应急资源管理调度系统</h2></div> <h1>${contentName}</h1><p>这里是${contentName}的详细信息。</p> `;
+
+            // 移除所有子项的选中样式
+            var items = document.querySelectorAll('.section-content p');
+            items.forEach(function(item) {
+                item.classList.remove('active');
+            });
+
+            // 为当前点击的子项添加选中样式
+            event.target.classList.add('active');
+        }
+
+        // 初始隐藏所有内容
+        document.querySelectorAll('.section-content').forEach(function(content) {
+            content.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
